@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Emoji Memory Match</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #e0f7fa, #ede7f6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 {
+    margin-bottom: 10px;
+  }
+  #game-board {
+    display: grid;
+    grid-template-columns: repeat(4, 80px);
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .card {
+    width: 80px;
+    height: 80px;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+  }
+  .card.flipped {
+    background: #fffde7;
+  }
+  #resetBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    background: #7e57c2;
+    color: white;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <a href="index.html">Professional Home</a>
+  <a href="scratch_investing_page.html">Scratch Page</a>
+  <h1>Emoji Memory Match</h1>
+  <p>Find all the matching pairs!</p>
+  <div id="game-board"></div>
+  <button id="resetBtn">Restart Game</button>
+
+<script>
+  const emojis = ["🍎","🍎","🎈","🎈","🐶","🐶","⭐","⭐","🎵","🎵","🔥","🔥","🍩","🍩","⚽","⚽"];
+  let board = document.getElementById("game-board");
+  let firstCard = null;
+  let lockBoard = false;
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  function createBoard() {
+    board.innerHTML = "";
+    shuffle(emojis);
+    emojis.forEach((emoji) => {
+      const card = document.createElement("div");
+      card.classList.add("card");
+      card.dataset.emoji = emoji;
+      card.addEventListener("click", flipCard);
+      board.appendChild(card);
+    });
+  }
+
+  function flipCard() {
+    if (lockBoard || this.classList.contains("flipped")) return;
+
+    this.classList.add("flipped");
+    this.textContent = this.dataset.emoji;
+
+    if (!firstCard) {
+      firstCard = this;
+      return;
+    }
+
+    if (firstCard.dataset.emoji === this.dataset.emoji) {
+      firstCard = null;
+      return;
+    }
+
+    lockBoard = true;
+    setTimeout(() => {
+      this.classList.remove("flipped");
+      this.textContent = "";
+      firstCard.classList.remove("flipped");
+      firstCard.textContent = "";
+      firstCard = null;
+      lockBoard = false;
+    }, 800);
+  }
+
+  document.getElementById("resetBtn").addEventListener("click", createBoard);
+
+  createBoard();
+</script>
+</body>
+</html>
